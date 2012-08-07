@@ -1,0 +1,3 @@
+What I have done:
+  - parsed information into nodes(intersections) and edges (segments).
+  - eliminated one-way edges that were the wrong way round while parsing.
