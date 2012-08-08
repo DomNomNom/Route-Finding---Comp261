@@ -124,7 +124,7 @@ void parseSegments(map<int, Road> &roads, map<int, Intersection> &intersections)
       );
       if (! newSegment.road->oneWay) // Only add the back-link if our road is not one-way
         intersections.find(nodeID2)->second.connections.push_back(
-          DirectedSegment(newSegment, false)
+          DirectedSegment(newSegment, true)
         );
     }
   }

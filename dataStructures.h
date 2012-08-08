@@ -40,7 +40,7 @@ public:
   Intersection(int id, Position pos) 
     : id(id), pos(pos) { } // copy to fields
   
-  double estimate(Intersection &b) {
+  double estimate(Intersection *b) {
     return 0.; // TODO: hypotinuse
   }
 };
@@ -124,10 +124,11 @@ public:
   Intersection *from, *to; // our end points ('to' is our 'target')
   Road *road;
   
-  
+  // things for A* searching
   double weight;
   double weightToTarget;
   double estimate;
+  double priority;
   
   DirectedSegment() { }
   DirectedSegment(Segment &toCopy, bool reverse)
@@ -135,7 +136,28 @@ public:
     if (reverse) {  from=toCopy.b; to=toCopy.a;  }
     else         {  from=toCopy.a; to=toCopy.b;  }
   }
+  
+  void calculateWeights(Intersection *end) {
+    weightToTarget = from->weightToHere + weight;
+    priority = weightToTarget + to->estimate(end);
+    //cout << "calculating Weights: " << from->id << " " << from->weightToHere << endl;
+  }
+  
+  // for our priority queue. (see: http://www.cplusplus.com/reference/stl/priority_queue/priority_queue/)
+  class Comparator {
+    bool reverse;
+  public:
+    Comparator(const bool& revparam=false) {
+      reverse = revparam;
+    }
+    bool operator() (const DirectedSegment *lhs, const DirectedSegment *rhs) const {
+      //cout << "comparing " << lhs->weight << " " << lhs->priority << " <> " << rhs->weight  << " " << rhs->priority << endl;
+      if (reverse) return (lhs->priority > rhs->priority);
+      else         return (lhs->priority < rhs->priority);
+    }
+  };
 };
+
 
 #endif
 

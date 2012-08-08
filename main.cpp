@@ -39,8 +39,11 @@ int main() {
   */
 
   // run A*
-  a_star(intersections, intersections[10120], intersections[38014]);
 
+  Vector
+
+  //bool pathFound = a_star(intersections, intersections[10120], intersections[38014]);
+  //cout << "pathFound: " << pathFound << endl;
 
   
   cout << "done  :)" << endl;

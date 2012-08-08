@@ -1,9 +1,26 @@
 #include <iostream> // cout TODO: remove me
 #include <limits> // double.infinity
 
+#include <vector>
+#include <queue>  // priority queue
+
 #include "dataStructures.h"
 
 using namespace std;
+
+typedef priority_queue<DirectedSegment*, vector<DirectedSegment*>, DirectedSegment::Comparator> priorityQ;
+
+
+
+// helper method: pushes all edges from the node onto the queue
+void pushNodeConnections(Intersection *node, Intersection &finalNode, priorityQ &q) {
+  cout << "pushing node " << node->id<< endl;
+  for (vector<DirectedSegment>::iterator it=node->connections.begin(); it!=node->connections.end(); ++it) {
+    if (it->to->visited) continue;
+    it->calculateWeights(&finalNode);  // note: we need to calculate priority before we push
+    q.push(&(*it));
+  }
+}
 
 
 /****************************************************\
@@ -35,8 +52,10 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
     all nodes.cameFrom ← null
     all nodes.costToHere ← infinity
   
+  A.costToHere = 0
+  A.cameFrom ← A
 
-  push A onto fringe
+  push all of A.connections onto fringe
   
   Repeat until fringe is empty:
     deque fringe into 'edge'
@@ -50,6 +69,7 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
       if not branch.to.visited:
         branch.weightToTarget = edge.weightToTarget + branch.weight
         branch.estimate = branch.target.estimate(B)
+        branch.priority = branch.weightToTarget + branch.estimate
         enqueue branch into fringe
 
   return path-not-possible (false)
@@ -65,7 +85,29 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
     node.weightToHere = numeric_limits<double>::infinity();
   }
   
+  priorityQ fringe(DirectedSegment::Comparator(true));
+
+  A.weightToHere = 0;
+  A.visited = true;
+
+  pushNodeConnections(&A, B, fringe);
   
+  while (! fringe.empty()) {
+    // dequeue
+    DirectedSegment *edge = fringe.top();
+    fringe.pop();
+    
+    if (edge->to->visited) continue;
+    edge->to->visited = true;
+    edge->to->from = edge;
+    edge->to->weightToHere = edge->weightToTarget;
+    if (edge->to == &B) return true;
+    
+    pushNodeConnections(edge->to, B, fringe);
+
+    cout << edge->priority << endl;
+  }
+  return false;
 }
 
 
@@ -75,6 +117,6 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
 | result into a nice vector starting from A to B.    |
 |                                                    |
 \****************************************************/
-void extractPath(map<int, Intersection> &nodes, vector<Intersection *> &target) {
+void getNodePath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, vector<Intersection *> &dataOut) {
   // TODO
 }
