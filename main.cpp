@@ -40,11 +40,16 @@ int main() {
 
   // run A*
 
-  Vector
-
   //bool pathFound = a_star(intersections, intersections[10120], intersections[38014]);
   //cout << "pathFound: " << pathFound << endl;
-
+  vector<Intersection*> path;
+  getNodePath(intersections, intersections[10120], intersections[38014], path);
+  
+  // print nodes
+  
+  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it) {
+    cout << (*it)->id << endl;
+  }
   
   cout << "done  :)" << endl;
   

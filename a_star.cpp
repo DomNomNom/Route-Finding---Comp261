@@ -1,5 +1,7 @@
-#include <iostream> // cout TODO: remove me
+#include <iostream> // cout   TODO: remove me
 #include <limits> // double.infinity
+
+#include <algorithm> // reverse
 
 #include <vector>
 #include <queue>  // priority queue
@@ -14,7 +16,6 @@ typedef priority_queue<DirectedSegment*, vector<DirectedSegment*>, DirectedSegme
 
 // helper method: pushes all edges from the node onto the queue
 void pushNodeConnections(Intersection *node, Intersection &finalNode, priorityQ &q) {
-  cout << "pushing node " << node->id<< endl;
   for (vector<DirectedSegment>::iterator it=node->connections.begin(); it!=node->connections.end(); ++it) {
     if (it->to->visited) continue;
     it->calculateWeights(&finalNode);  // note: we need to calculate priority before we push
@@ -29,9 +30,11 @@ void pushNodeConnections(Intersection *node, Intersection &finalNode, priorityQ 
 | shortest path from A to B using the given map of   |
 | nodes.                                             |
 |                                                    |
+| Note: please use the method(s) below for useful    |
+| data such as the node-path                         |
+|                                                    |
 | The final path will be the linked list from B to A |
 | when following the trail of 'from' pointers        |
-| Note: please use the method(s) below for this      |
 |                                                    |
 | The return value indicates whether the path has    |
 | been found.                                        |
@@ -104,8 +107,6 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
     if (edge->to == &B) return true;
     
     pushNodeConnections(edge->to, B, fringe);
-
-    cout << edge->priority << endl;
   }
   return false;
 }
@@ -118,5 +119,14 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
 |                                                    |
 \****************************************************/
 void getNodePath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, vector<Intersection *> &dataOut) {
-  // TODO
+  bool pathFound = a_star(nodes, A, B);
+  if (! pathFound) return;
+  
+  // build it from back to front and reverse later.
+  dataOut.push_back(&B);
+  while (dataOut.back() != &A) {
+    dataOut.push_back(dataOut.back()->from->from); // 2 froms because one for node one for segment
+  }
+  
+  reverse(dataOut.begin(), dataOut.end());
 }
