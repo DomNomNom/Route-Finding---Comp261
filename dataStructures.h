@@ -1,4 +1,4 @@
-#ifndef DATASTRUCTURES // include guards
+#ifndef DATASTRUCTURES // include-guards
 #define DATASTRUCTURES
 
 #include <string>
@@ -73,7 +73,7 @@ public:
     this->oneWay = oneway;
     this->speed = speed;
     this->roadClass = roadclass;
-    this->allow_car = ! notforcar;
+    this->allow_car = !notforcar;
     this->allow_pedestrian = !notforpede;
     this->allow_bicycle = !notforbicy;
   }
@@ -132,15 +132,18 @@ public:
   
   DirectedSegment() { }
   DirectedSegment(Segment &toCopy, bool reverse)
-   : length(toCopy.length), road(toCopy.road), weight(toCopy.length) { // TODO: better weight
+   : length(toCopy.length), road(toCopy.road), weight(toCopy.length) {
     if (reverse) {  from=toCopy.b; to=toCopy.a;  }
     else         {  from=toCopy.a; to=toCopy.b;  }
   }
   
-  void calculateWeights(Intersection *end) {
+  void calculateWeights_distance(Intersection *end) {
     weightToTarget = from->weightToHere + weight;
     priority = weightToTarget + to->estimate(end);
-    //cout << "calculating Weights: " << from->id << " " << from->weightToHere << endl;
+  }
+  void calculateWeights(Intersection *end) {
+    weightToTarget = from->weightToHere + weight;//TODO * road.speedLimit;
+    priority = weightToTarget + to->estimate(end);
   }
   
   // for our priority queue. (see: http://www.cplusplus.com/reference/stl/priority_queue/priority_queue/)

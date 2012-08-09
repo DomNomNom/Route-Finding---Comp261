@@ -1,3 +1,8 @@
 What I have done:
   - parsed information into nodes(intersections) and edges (segments).
-  - eliminated one-way edges that were the wrong way round while parsing.
+  - eliminated wrong-way directed edges of one-way-streets while parsing.
+  - TODO: used time calculations
+  
+What I haven't done:
+  - turning restrictions
+  

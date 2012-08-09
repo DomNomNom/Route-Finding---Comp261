@@ -42,15 +42,21 @@ int main() {
 
   //bool pathFound = a_star(intersections, intersections[10120], intersections[38014]);
   //cout << "pathFound: " << pathFound << endl;
-  vector<Intersection*> path;
-  getNodePath(intersections, intersections[10120], intersections[38014], path);
-  
+  //getNodePath(intersections, intersections[3], intersections[5858], path);
+
   // print nodes
+  int A = 29632;
+  int B = 5526;
   
-  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it) {
-    cout << (*it)->id << endl;
-  }
+  vector<Intersection*> path;
+//  getNodePath(intersections, intersections[993037], intersections[38005], path);
+  getNodePath(intersections, intersections[A], intersections[B], path); // should
+  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
+    cout << (*it)->id << "  ";
+  cout << endl;
   
+  cout << "weight: " << intersections[B].weightToHere << endl;
+    
   cout << "done  :)" << endl;
   
   return 0;

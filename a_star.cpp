@@ -112,6 +112,7 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
 }
 
 
+
 /****************************************************\
 |                                                    |
 | This function will put the path of the above       |
@@ -126,6 +127,26 @@ void getNodePath(map<int, Intersection> &nodes, Intersection &A, Intersection &B
   dataOut.push_back(&B);
   while (dataOut.back() != &A) {
     dataOut.push_back(dataOut.back()->from->from); // 2 froms because one for node one for segment
+  }
+  
+  reverse(dataOut.begin(), dataOut.end());
+}
+
+/****************************************************\
+|                                                    |
+| This function will put the path of the above       |
+| result into a nice vector starting from A to B.    |
+|                                                    |
+\****************************************************/
+void getSegmentPath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, vector<DirectedSegment *> &dataOut) {
+  bool pathFound = a_star(nodes, A, B);
+  if (! pathFound) return;
+  
+  Intersection *current = &B;
+  // build it from back to front and reverse later.
+  while (current != &A) {
+    dataOut.push_back(current->from); // 2 froms because one for node one for segment
+    current = current->from->from;
   }
   
   reverse(dataOut.begin(), dataOut.end());
