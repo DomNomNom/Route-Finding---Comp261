@@ -1,4 +1,4 @@
-//#include <iostream> // cout   TODO: remove me
+#include <iostream> // cout   TODO: remove me
 #include <limits> // double.infinity
 
 #include <algorithm> // reverse
@@ -15,9 +15,10 @@ typedef priority_queue<DirectedSegment*, vector<DirectedSegment*>, DirectedSegme
 
 
 // helper method: pushes all edges from the node onto the queue
-void pushNodeConnections(Intersection *node, Intersection &finalNode, priorityQ &q) {
+void pushNodeConnections(Intersection *node, Intersection &finalNode, Vehicle tansport, priorityQ &q) {
   for (vector<DirectedSegment>::iterator it=node->connections.begin(); it!=node->connections.end(); ++it) {
     if (it->to->visited) continue;
+    if (! it->road->allowsVehicle(tansport)) { cout << "AAAAAAAAAA"; continue;}
     it->calculateWeights(&finalNode);  // note: we need to calculate priority before we push
     q.push(&(*it));
   }
@@ -41,7 +42,7 @@ void pushNodeConnections(Intersection *node, Intersection &finalNode, priorityQ 
 |                                                    |
 \****************************************************/
 
-bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
+bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B, Vehicle tansport) {
   /* ----- Pseudo code: ------
   note: Node and directed-edge refer to Intersection and DirectedEdge respectively
   
@@ -92,7 +93,7 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
   A.weightToHere = 0;
   A.visited = true;
 
-  pushNodeConnections(&A, B, fringe);
+  pushNodeConnections(&A, B, tansport, fringe);
   
   while (! fringe.empty()) {
     // dequeue
@@ -105,7 +106,7 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
     edge->to->weightToHere = edge->weightToTarget;
     if (edge->to == &B) return true;
     
-    pushNodeConnections(edge->to, B, fringe);
+    pushNodeConnections(edge->to, B, tansport, fringe);
   }
   return false;
 }
@@ -118,25 +119,20 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
 | result into a nice vector starting from A to B.    |
 |                                                    |
 \****************************************************/
-void getNodePath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, vector<Intersection *> &dataOut) {
-  bool pathFound = a_star(nodes, A, B);
+void getNodePath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, Vehicle tansport, vector<Intersection *> &dataOut) {
+  bool pathFound = a_star(nodes, A, B, tansport);
   if (! pathFound) return;
   
   // build it from back to front and reverse later.
   dataOut.push_back(&B);
-  while (dataOut.back() != &A) {
+  while (dataOut.back() != &A)
     dataOut.push_back(dataOut.back()->from->from); // 2 froms because one for node one for segment
-  }
   
   reverse(dataOut.begin(), dataOut.end());
 }
 
-/****************************************************\
-|                                                    |
-| This function will put the path of the above       |
-| result into a nice vector starting from A to B.    |
-|                                                    |
-\****************************************************/
+
+/* note: this function has not been properly tested as it is redundant. dragons be here
 void getSegmentPath(map<int, Intersection> &nodes, Intersection &A, Intersection &B, vector<DirectedSegment *> &dataOut) {
   bool pathFound = a_star(nodes, A, B);
   if (! pathFound) return;
@@ -149,4 +145,4 @@ void getSegmentPath(map<int, Intersection> &nodes, Intersection &A, Intersection
   }
   
   reverse(dataOut.begin(), dataOut.end());
-}
+} */

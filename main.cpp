@@ -18,15 +18,12 @@ int main() {
   map<int, Road> roads;
 
   // parsing
-  //cout << "Reading files... ";
   parseIntersections(intersections);
   parseRoads(roads);
   parseSegments(roads, intersections);
-  //cout << "done." << endl;
-
 
   /*
-  // Some tests to check parsing got the proper results
+  // DEBUG: Some tests to check parsing got the proper results
   cout << "test intersections[5]: " << intersections[5].pos.lattitude << endl;
   cout << "test roads[34589].position: " << roads[34589].positions[0].lattitude << endl;
   cout << "test roads[3].label: " << roads[3].label << endl;
@@ -44,35 +41,44 @@ int main() {
   int B = 5526;
   
   vector<Intersection*> path;
-//  getNodePath(intersections, intersections[993037], intersections[38005], path);
-  getNodePath(intersections, intersections[A], intersections[B], path); // should
+  getNodePath(intersections, intersections[A], intersections[B], PEDESTRIAN, path);
+  
+  /* // DEBUG: show all nodeIDs
   cout << "NodeID path: " << endl;
   for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
     cout << (*it)->id << "  ";
   cout << endl << endl;
+  */
   
-  cout << "Directions: " << endl;
-  Road *prevRoad = 0;
-  double accumulatedRoadLength = 0;
-  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it) {
-    DirectedSegment *seg = (*it)->from;
-    if (seg == 0) continue; // don't use the first one
-    if (prevRoad == 0) 
-      prevRoad = seg->road;
-    if (seg->road->label.compare(prevRoad->label) != 0) { // if we now have a different road
-      cout << "Follow " << prevRoad->label << " for " << accumulatedRoadLength << "km" << endl;
-      prevRoad = seg->road;
-      accumulatedRoadLength = 0;
+  // print out directions, summinng up multiple segments that have the same road name
+  if (intersections.size()) {
+    cout << "Directions: " << endl;
+    Road *prevRoad = 0;
+    double accumulatedRoadLength = 0;
+    double totalDistance = 0;
+    for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it) {
+      DirectedSegment *seg = (*it)->from;
+      if (seg == 0) continue; // don't use the first one
+      if (prevRoad == 0) 
+        prevRoad = seg->road;
+      if (seg->road->label.compare(prevRoad->label) != 0) { // if we now have a different road
+        cout << "Follow " << prevRoad->label << " for " << accumulatedRoadLength << "km" << endl;
+        prevRoad = seg->road;
+        totalDistance += accumulatedRoadLength;
+        accumulatedRoadLength = 0;
+      }
+      accumulatedRoadLength += seg->length;
     }
-    accumulatedRoadLength += seg->length;
-  }
-  cout <<accumulatedRoadLength << endl;
-  if (prevRoad != 0)
-    cout << "follow " << prevRoad->label << " for " << accumulatedRoadLength << "km" << endl << endl;
+    if (prevRoad != 0)
+      cout << "follow " << prevRoad->label << " for " << accumulatedRoadLength << " km" << endl << endl;
 
-  cout << "estimated travel time: " << intersections[B].weightToHere << " hours" << endl << endl;
-    
-  cout << "done  :)" << endl;
+    cout << "Total travel distance: " << totalDistance << " km" << endl;
+    cout << "minimum time (obiding speed limits): " << intersections[B].weightToHere << " hours" << endl << endl;
+      
+    cout << "done  :)" << endl;
+  }
+  else
+    cout << "could not find path" << endl;
   
   return 0;
 }
