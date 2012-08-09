@@ -38,24 +38,39 @@ int main() {
        << intersections[9655].connections[0]->b->id     << endl;
   */
 
-  // run A*
 
-  //bool pathFound = a_star(intersections, intersections[10120], intersections[38014]);
-  //cout << "pathFound: " << pathFound << endl;
-  //getNodePath(intersections, intersections[3], intersections[5858], path);
-
-  // print nodes
+  // nodes
   int A = 29632;
   int B = 5526;
   
   vector<Intersection*> path;
 //  getNodePath(intersections, intersections[993037], intersections[38005], path);
   getNodePath(intersections, intersections[A], intersections[B], path); // should
+  cout << "NodeID path: " << endl;
   for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
     cout << (*it)->id << "  ";
-  cout << endl;
+  cout << endl << endl;
   
-  cout << "weight: " << intersections[B].weightToHere << endl;
+  cout << "Directions: " << endl;
+  Road *prevRoad = 0;
+  double accumulatedRoadLength = 0;
+  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it) {
+    DirectedSegment *seg = (*it)->from;
+    if (seg == 0) continue; // don't use the first one
+    if (prevRoad == 0) 
+      prevRoad = seg->road;
+    if (seg->road->label.compare(prevRoad->label) != 0) { // if we now have a different road
+      cout << "Follow " << prevRoad->label << " for " << accumulatedRoadLength << "km" << endl;
+      prevRoad = seg->road;
+      accumulatedRoadLength = 0;
+    }
+    accumulatedRoadLength += seg->length;
+  }
+  cout <<accumulatedRoadLength << endl;
+  if (prevRoad != 0)
+    cout << "follow " << prevRoad->label << " for " << accumulatedRoadLength << "km" << endl << endl;
+
+  cout << "estimated travel time: " << intersections[B].weightToHere << " hours" << endl << endl;
     
   cout << "done  :)" << endl;
   

@@ -1,4 +1,4 @@
-#include <iostream> // cout   TODO: remove me
+//#include <iostream> // cout   TODO: remove me
 #include <limits> // double.infinity
 
 #include <algorithm> // reverse
@@ -81,7 +81,6 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B) {
   
   // Initialize
   for (map<int, Intersection>::iterator i=nodes.begin(); i!=nodes.end(); ++i) { 
-    //cout << i->first << ": " << i->second.id << endl;
     Intersection &node = i->second;
     node.visited = false;
     node.from = 0;

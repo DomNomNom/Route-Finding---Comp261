@@ -2,6 +2,7 @@
 #define DATASTRUCTURES
 
 #include <string>
+#include <math.h> // sqrt
 
 using namespace std;
 
@@ -18,6 +19,17 @@ public:
   Position() { }
   Position(double lattitude, double longitude)
    : lattitude(longitude), longitude(longitude) { }
+  
+  // small helper for distance()
+  double hypotinuse(double x, double y) { return sqrt(x*x + y*y); }
+
+  // returns the distance in KM
+  double distance(Position &other) {
+    return hypotinuse(
+      lattitude*111.0  - other.lattitude*111.0, // scaling as per documentation
+      longitude*88.649 - other.longitude*88.649
+    );
+  }
 };
 
 // forward declarations
@@ -41,7 +53,7 @@ public:
     : id(id), pos(pos) { } // copy to fields
   
   double estimate(Intersection *b) {
-    return 0.; // TODO: hypotinuse
+    return pos.distance(b->pos) / 110.;
   }
 };
 
@@ -58,7 +70,7 @@ public:
   string label;
   string city;
   bool oneWay;
-  int speed;
+  double speedLimit;
   int roadClass;
   bool allow_car, allow_pedestrian, allow_bicycle;
   
@@ -71,11 +83,22 @@ public:
     this->label = label;
     this->city = city;
     this->oneWay = oneway;
-    this->speed = speed;
     this->roadClass = roadclass;
     this->allow_car = !notforcar;
     this->allow_pedestrian = !notforpede;
     this->allow_bicycle = !notforbicy;
+    
+    // speed limits
+    switch (speed) {
+      case 0: speedLimit = 5;   break;
+      case 1: speedLimit = 10;  break;
+      case 2: speedLimit = 40;  break;
+      case 3: speedLimit = 60;  break;
+      case 4: speedLimit = 80;  break;
+      case 5: speedLimit = 100; break;
+      case 6: // we're not in germany: no road should allow anything faster than 110kmh.
+      default: speedLimit = 110; break;
+    }
   }
 
   bool allowsVehicle(Vehicle v) {
@@ -142,7 +165,7 @@ public:
     priority = weightToTarget + to->estimate(end);
   }
   void calculateWeights(Intersection *end) {
-    weightToTarget = from->weightToHere + weight;//TODO * road.speedLimit;
+    weightToTarget = from->weightToHere + weight / road->speedLimit;
     priority = weightToTarget + to->estimate(end);
   }
   
