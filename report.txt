@@ -1,10 +1,74 @@
-What I have done:
-  - parsed information into nodes(intersections) and edges (segments).
-  - eliminated wrong-way directed edges of one-way-streets while parsing.
-  - Writtent A* to use speed limitations to try to minimise time rather than just distance.
+=========== How to run this program: ===========
+execute the RUNME file
+alternatively: g++ main.cpp && ./a.out
+
+how to run in verbose mode (to give nodeID names): ./a.out -v
+
+=========== What my code does: ===========
+  - parses information into nodes(intersections) and edges (segments).
+  - eliminates wrong-way directed edges of one-way-streets while parsing.
+  - Use A* with speed limitations to minimise time rather than just distance.
     note: this assumes you can travel at the roads speed limit
+  - [extention] Nicer directions
   
-  
-What I haven't done:
-  - turning restrictions
-  
+=========== What my code doesn't do: ===========
+  - [extention] I have tried getting a GUI to work (using SDL+OPENGL) but it only caused me segfaults :(
+
+
+=========== important data structures that I used: ===========
+  - [Note] all my data structures are defined in dataStructures.h
+  - My A* algorithm was centered around Nodes (Intersections) that had directed weighted edges (DirectedSegment) connecting them to other nodes, making it a directed graph
+  - I also had maps from IDs to Nodes and roads
+
+
+
+=========== detailed pseudocode algorithm for the main search:   ===========
+
+note: Node and directed-edge refer to Intersection and DirectedEdge respectively
+
+variables:
+Node A // starting Node
+Node B // end Node
+priorityQueue<over directed-edges, sorted by (weightToTarget + target.estimate(B))>  fringe
+
+intialize:
+  all nodes.visited ← false
+  all nodes.cameFrom ← null
+  all nodes.costToHere ← infinity
+
+A.costToHere = 0
+A.cameFrom ← A
+
+push all of A.connections onto fringe
+
+Repeat until fringe is empty:
+  deque fringe into 'edge'
+  if edge.to.visited: next repeat
+
+  edge.to.visited ← true
+  edge.to.pathTo ← from
+  edge.to.weightToHere ← edge.weightToTarget
+  if edge.to = goal: return path-found (true)
+  for each directed-edge 'branch' coming out of edge.to:
+    if not branch.to.visited:
+      branch.weightToTarget = edge.weightToTarget + branch.weight
+      branch.estimate = branch.target.estimate(B)
+      branch.priority = branch.weightToTarget + branch.estimate
+      enqueue branch into fringe
+
+return path-not-possible (false)
+
+
+
+=========== describe your path cost and heuristic estimate: ===========
+path cost: 
+  the least amount of time to travel along the path (assumming it is possible to travel at the speedlimit)
+heuristic estimate: 
+  the time to the finish at the maximum speed (110km/h) if traveled in a straight line to it
+  note: This estimate could be wrong if there would be a tunnel built that is signifiantly long enough so the curvature of the earth matters. also this tunnel must allow travel at maximum speed. This scenario breaks the estimate as the estimate assumes the path is on a 2D plane. This scenario currently does not exist and is EXTREMELY UNLIKELY to ever exist.
+
+
+=========== outline how you tested that your program worked:  ===========
+Compared with the results of other people in the class: http://ecs.victoria.ac.nz/cgi-bin/yabb/YaBB.pl?num=1344236686
+note: Some had GUIs to make it easy to see whether they are correct and my program gave the same results as those :)
+

@@ -21,7 +21,7 @@ using namespace std;
 
 // ================ MAIN =================
 
-int main() {
+int main(int argc, char *argv[]) {
   
   map<int, Intersection> intersections;
   map<int, Road> roads;
@@ -45,22 +45,50 @@ int main() {
   */
 
 
-  // nodes
-  int A = 29632;
-  int B = 5526;
+  // get start/end nodes
+  int A = -1;
+  int B = -1;
+  while (intersections.find(A) == intersections.end()) {
+    cout << "Start NodeID (eg. 29632): ";
+    cin >> A;
+  }
+  while (intersections.find(B) == intersections.end()) {
+    cout << "End   NodeID (eg.  5526): ";
+    cin >> B;
+  }
+  cout << endl;
   
+  // get travel vehicle
+  Vehicle vehicle = CAR;
+  int vehicleSelection;
+  cout << "What kind of transport will you be using?" << endl;
+  cout << "(car = 0, bicycle = 1, on foot = 2)" << endl;
+  cin >> vehicleSelection;
+  switch (vehicleSelection) {
+    case 0: vehicle = CAR; break;
+    case 1: vehicle = BICYCLE; break;
+    case 2: vehicle = PEDESTRIAN; break;
+    default: cout << "invalid number. presuming you meant Car..." << endl;
+  }
+  cout << endl;
+  
+  
+  // here is where the A* magic happens :)
   vector<Intersection*> path;
-  getNodePath(intersections, intersections[A], intersections[B], PEDESTRIAN, path);
+  getNodePath(intersections, intersections[A], intersections[B], vehicle, path);
   
-  /* // DEBUG: show all nodeIDs in the path
-  cout << "NodeID path: " << endl;
-  for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
-    cout << (*it)->id << "  ";
-  cout << endl << endl;
-  */
   
-  // print out directions, summinng up multiple segments that have the same road name
-  if (intersections.size()) {
+  // if we have a path
+  if (path.size()) {
+    if (argc > 1) {
+       // DEBUG: show all nodeIDs in the path
+      cout << "[Debug-info] NodeID path: " << endl;
+      for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
+        cout << (*it)->id << "  ";
+      cout << endl << endl;
+    }
+
+    // print out directions, summinng up multiple segments that have the same road name
     cout << "Directions: " << endl;
     Road *prevRoad = 0;
     double accumulatedRoadLength = 0;
@@ -83,11 +111,11 @@ int main() {
 
     cout << "Total travel distance: " << totalDistance << " km" << endl;
     cout << "minimum time (obiding speed limits): " << intersections[B].weightToHere << " hours" << endl << endl;
-      
+
     cout << "done  :)" << endl;
   }
   else
-    cout << "could not find path" << endl;
+    cout << "Could not find any path :(" << endl;
   
   return 0;
 }

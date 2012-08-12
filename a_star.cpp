@@ -89,7 +89,6 @@ bool a_star(map<int, Intersection> &nodes, Intersection &A, Intersection &B, Veh
   return path-not-possible (false)
   
   */
-  
   // Initialize
   for (map<int, Intersection>::iterator i=nodes.begin(); i!=nodes.end(); ++i) { 
     Intersection &node = i->second;
