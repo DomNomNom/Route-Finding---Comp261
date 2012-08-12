@@ -1,3 +1,13 @@
+/****************************************************\
+|                                                    |
+| This file is part of a A* route finding program    |
+| intended for academic purposes                     |
+|                                                    |
+| Author: Dominik Schmid                             |
+|                                                    |
+\****************************************************/
+
+
 #include <iostream> // cout   TODO: remove me
 #include <limits> // double.infinity
 
@@ -18,7 +28,7 @@ typedef priority_queue<DirectedSegment*, vector<DirectedSegment*>, DirectedSegme
 void pushNodeConnections(Intersection *node, Intersection &finalNode, Vehicle tansport, priorityQ &q) {
   for (vector<DirectedSegment>::iterator it=node->connections.begin(); it!=node->connections.end(); ++it) {
     if (it->to->visited) continue;
-    if (! it->road->allowsVehicle(tansport)) { cout << "AAAAAAAAAA"; continue;}
+    if (! it->road->allowsVehicle(tansport)) { continue;}
     it->calculateWeights(&finalNode);  // note: we need to calculate priority before we push
     q.push(&(*it));
   }

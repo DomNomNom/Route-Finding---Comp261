@@ -1,7 +1,7 @@
-What I have done:  [aimed to achieve 80% of marks]
+What I have done:
   - parsed information into nodes(intersections) and edges (segments).
   - eliminated wrong-way directed edges of one-way-streets while parsing.
-  - used speed limitations to try to minimise time rather than just distance.
+  - Writtent A* to use speed limitations to try to minimise time rather than just distance.
     note: this assumes you can travel at the roads speed limit
   
   

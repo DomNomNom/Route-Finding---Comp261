@@ -1,3 +1,12 @@
+/****************************************************\
+|                                                    |
+| This file is part of a A* route finding program    |
+| intended for academic purposes                     |
+|                                                    |
+| Author: Dominik Schmid                             |
+|                                                    |
+\****************************************************/
+
 #include <iostream>  // cout
 
 // data structures
@@ -43,7 +52,7 @@ int main() {
   vector<Intersection*> path;
   getNodePath(intersections, intersections[A], intersections[B], PEDESTRIAN, path);
   
-  /* // DEBUG: show all nodeIDs
+  /* // DEBUG: show all nodeIDs in the path
   cout << "NodeID path: " << endl;
   for (vector<Intersection*>::iterator it=path.begin(); it!=path.end(); ++it)
     cout << (*it)->id << "  ";

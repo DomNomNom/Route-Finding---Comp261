@@ -1,3 +1,13 @@
+/****************************************************\
+|                                                    |
+| This file is part of a A* route finding program    |
+| intended for academic purposes                     |
+|                                                    |
+| Author: Dominik Schmid                             |
+|                                                    |
+\****************************************************/
+
+
 #ifndef DATASTRUCTURES // include-guards
 #define DATASTRUCTURES
 
